@@ -332,7 +332,7 @@ if arquivo:
     # =========================
     elif opcao == "Email Externo":
 
-        st.header("📧 Alunos com email externo (fora do padrão ifnmg.edu.br)")
+        st.header("Alunos com email externo (fora do padrão ifnmg.edu.br)")
 
         # garantir tratamento de nulos e padronização
         df_temp = df_ativos.copy()
