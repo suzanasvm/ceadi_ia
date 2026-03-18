@@ -68,7 +68,7 @@ if arquivo:
         value=10
     )
 
-    st.sidebar.subheader("🎨 Personalização")
+    st.sidebar.subheader("Personalização")
 
     tamanho_fonte = st.sidebar.slider(
         "Tamanho da fonte",
@@ -110,7 +110,7 @@ if arquivo:
         )
 
         fig.update_layout(
-            title=f"📊 Top {top_n} grupos por quantidade de alunos",
+            title=f"Top {top_n} grupos por quantidade de alunos",
             yaxis=dict(categoryorder="total ascending"),
             height=altura_grafico,
             font=dict(size=tamanho_fonte)
