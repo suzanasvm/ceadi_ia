@@ -91,38 +91,9 @@ if arquivo:
 
         st.header("Panorama Geral")
 
-        contagem = (
-            df_ativos.groupby("Grupos")
-            .size()
-            .reset_index(name="Quantidade")
-            .sort_values(by="Quantidade", ascending=False)
-            .head(top_n)
-        )
-
-        fig = px.bar(
-            contagem,
-            x="Quantidade",
-            y="Grupos",
-            orientation="h",
-            text="Quantidade",
-            color="Quantidade",
-            color_continuous_scale="viridis"
-        )
-
-        fig.update_layout(
-            title=f"Top {top_n} grupos por quantidade de alunos",
-            yaxis=dict(categoryorder="total ascending"),
-            height=altura_grafico,
-            font=dict(size=tamanho_fonte)
-        )
-
-        st.plotly_chart(fig, use_container_width=True)
-
         # =========================
-        # RISCO POR GRUPO (% + ABS)
+        # BASE COMPLETA (SEM FILTRO)
         # =========================
-        st.subheader("Onde está o maior risco de evasão?")
-
         total_por_grupo = (
             df_ativos.groupby("Grupos")
             .size()
@@ -139,20 +110,53 @@ if arquivo:
 
         merged = pd.merge(total_por_grupo, risco_por_grupo, on="Grupos", how="left")
         merged["Em risco"] = merged["Em risco"].fillna(0)
-
         merged["Percentual"] = (merged["Em risco"] / merged["Total"]) * 100
 
-        merged = (
-            merged.sort_values(by="Percentual", ascending=False)
-            .head(top_n)
+        # =========================
+        # GRÁFICO 1: TAMANHO DOS GRUPOS
+        # =========================
+        contagem = (
+            total_por_grupo
+            .sort_values(by="Total", ascending=False)
         )
 
+        contagem_top = contagem.head(top_n)
+
+        fig = px.bar(
+            contagem_top,
+            x="Total",
+            y="Grupos",
+            orientation="h",
+            text="Total",
+            color="Total",
+            color_continuous_scale="viridis"
+        )
+
+        fig.update_layout(
+            title=f"Top {top_n} grupos por quantidade de alunos",
+            yaxis=dict(categoryorder="total ascending"),
+            height=altura_grafico,
+            font=dict(size=tamanho_fonte)
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+
+        # =========================
+
+        # GRÁFICO 2: RISCO (%)
+        # =========================
+        st.subheader("Onde está o maior risco de evasão?")
+
+        merged_percentual = merged.sort_values(by="Percentual", ascending=False)
+        merged_percentual_top = merged_percentual.head(top_n)
+
         fig2 = px.bar(
-            merged,
+            merged_percentual_top,
             x="Percentual",
             y="Grupos",
             orientation="h",
-            text=merged["Percentual"].round(1).astype(str) + "%",
+            text=merged_percentual_top["Percentual"].round(1).astype(str) + "%",
             color="Percentual",
             color_continuous_scale="reds",
             hover_data={
@@ -180,17 +184,15 @@ if arquivo:
         st.plotly_chart(fig2, use_container_width=True)
 
         # =========================
-        # NOVO GRÁFICO: EVASÃO ABSOLUTA
+        # GRÁFICO 3: EVASÃO ABSOLUTA
         # =========================
         st.subheader("Onde está a maior evasão (valores absolutos)?")
 
-        evasao_abs = (
-            merged.sort_values(by="Em risco", ascending=False)
-            .head(top_n)
-        )
+        merged_abs = merged.sort_values(by="Em risco", ascending=False)
+        merged_abs_top = merged_abs.head(top_n)
 
         fig3 = px.bar(
-            evasao_abs,
+            merged_abs_top,
             x="Em risco",
             y="Grupos",
             orientation="h",
