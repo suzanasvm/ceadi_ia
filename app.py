@@ -53,7 +53,7 @@ if arquivo:
 
     opcao = st.sidebar.radio(
         "Navegação",
-        ["Visão Geral", "Por Grupo"]
+        ["Visão Geral", "Por Grupo", "Email Externo"]
     )
 
     dias_risco = st.sidebar.slider(
@@ -213,7 +213,7 @@ if arquivo:
         )
 
         fig3.update_layout(
-            title=f"Top {top_n} grupos com maior número absoluto de alunos em risco (> {dias_risco} dias)",
+             title=f"Top {top_n} grupos com maior número absoluto de alunos em risco (> {dias_risco} dias)",
             yaxis=dict(categoryorder="total ascending"),
             height=altura_grafico,
             font=dict(size=tamanho_fonte),
@@ -326,3 +326,62 @@ if arquivo:
         st.write(f"Critério: mais de {dias_risco} dias sem acesso")
 
         st.dataframe(risco, use_container_width=True)
+    # =========================
+    # =========================
+    # MENU: EMAIL EXTERNO
+    # =========================
+    elif opcao == "Email Externo":
+
+        st.header("📧 Alunos com email externo (fora do padrão ifnmg.edu.br)")
+
+        # garantir tratamento de nulos e padronização
+        df_temp = df_ativos.copy()
+        df_temp["Endereço de e-mail"] = df_temp["Endereço de e-mail"].fillna("").str.strip().str.lower()
+
+        # filtrar emails que NÃO terminam com ifnmg.edu.br
+        df_externo = df_temp[
+            ~df_temp["Endereço de e-mail"].str.endswith("ifnmg.edu.br")
+        ]
+
+        st.subheader("Lista de alunos")
+
+        st.dataframe(
+            df_externo.sort_values(by="Endereço de e-mail"),
+            use_container_width=True
+        )
+
+        # =========================
+        # INDICADORES
+        # =========================
+        st.subheader("Indicadores")
+
+        total_externo = len(df_externo)
+        total_geral = len(df_ativos)
+
+        percentual = (total_externo / total_geral * 100) if total_geral > 0 else 0
+
+        col1, col2 = st.columns(2)
+
+        col1.metric("Total de emails externos", total_externo)
+        col2.metric("Percentual", f"{percentual:.1f}%")
+
+        # =========================
+        # EXPORTAÇÃO
+        # =========================
+        st.subheader("Exportação")
+
+        from io import BytesIO
+
+        output = BytesIO()
+
+        with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
+            df_externo.to_excel(writer, sheet_name="Email_Externo", index=False)
+
+        output.seek(0)
+
+        st.download_button(
+            label="Gerar planilha Excel",
+            data=output,
+            file_name="emails_externos.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
