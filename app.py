@@ -5,7 +5,7 @@ import plotly.express as px
 
 st.set_page_config(layout="wide")
 
-st.title("Ceadi - Dashboard Inteligente de Engajamento de Alunos")
+st.title("Ceadi - Dashboard de Engajamento de Alunos")
 
 # =========================
 # Função de conversão
@@ -186,7 +186,7 @@ if arquivo:
         # =========================
         # GRÁFICO 3: EVASÃO ABSOLUTA
         # =========================
-        st.subheader("Onde está a maior evasão (valores absolutos)?")
+        st.subheader("Possibilidade de Evasão em valores absolutos?")
 
         merged_abs = merged.sort_values(by="Em risco", ascending=False)
         merged_abs_top = merged_abs.head(top_n)
@@ -213,7 +213,7 @@ if arquivo:
         )
 
         fig3.update_layout(
-            title=f"Top {top_n} grupos com maior número absoluto de alunos em risco",
+            title=f"Top {top_n} grupos com maior número absoluto de alunos em risco (> {dias_risco} dias)",
             yaxis=dict(categoryorder="total ascending"),
             height=altura_grafico,
             font=dict(size=tamanho_fonte),
