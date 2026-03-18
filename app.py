@@ -62,10 +62,10 @@ if arquivo:
     )
 
     top_n = st.sidebar.slider(
-        "Top X grupos",
+        "Top grupos",
         min_value=3,
         max_value=50,
-        value=10
+        value=15
     )
 
     st.sidebar.subheader("Personalização")
