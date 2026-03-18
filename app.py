@@ -356,7 +356,7 @@ if arquivo:
         st.subheader("Indicadores")
 
         total_externo = len(df_externo)
-        total_geral = len(df_ativos)
+        total_geral = total_alunos
 
         percentual = (total_externo / total_geral * 100) if total_geral > 0 else 0
 
