@@ -356,6 +356,14 @@ if arquivo:
         st.subheader("Indicadores")
 
         total_externo = len(df_externo)
+
+         # identificar profissionais (sem grupo ou grupo vazio)
+        profissionais = df_temp[
+            df_temp["Grupos"].isna() | (df_temp["Grupos"].astype(str).str.strip() == "Nenhum grupo")
+        ]
+
+        # alunos válidos (com grupo)
+        alunos = df_temp.drop(profissionais.index)
         total_geral = len(alunos)
 
         percentual = (total_externo / total_geral * 100) if total_geral > 0 else 0
